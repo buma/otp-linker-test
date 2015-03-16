@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style type="text/css">
+  
+	.node {
+    cursor: pointer;
+  }
+
+  .overlay{
+      background-color:#EEE;
+  }
+   
+  .node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+  }
+   
+  .node text {
+    font-size:10px; 
+    font-family:sans-serif;
+  }
+   
+  .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+  }
+
+  .templink {
+    fill: none;
+    stroke: red;
+    stroke-width: 3px;
+  }
+
+  .ghostCircle.show{
+      display:block;
+  }
+
+  .ghostCircle, .activeDrag .ghostCircle{
+       display: none;
+  }
+
+</style>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="dndTree.js"></script>
+<script type="text/javascript">
+	$( document ).ready(function() {
+		var val = $('select').val();
+		d3.json(val + ".json", loadTree);
+		$("#span_name").text(val);
+		$('select').change(function() {
+			$("#span_name").text(this.value);
+			//treeJSON = d3.json("out.json", function(error, treeData) {
+			$("#tree-container").empty();
+			d3.json(this.value + ".json", loadTree);
+		});
+	});
+</script>
+<body>
+	<p>Based on <a href="http://bl.ocks.org/robschmuecker/7880033">D3.js Zoomable example</a></p>
+	<p>This shows linking stops in getClosestEdge function of StreetVertexIndexServiceImpl.<br />
+		For each stop correct edge with OSM ID was specified. And in getClosestEdge for each stage different option is written:<br />
+		<ul>
+			<li>NEARBY - correct edge is in nearby edges</li>
+			<li>IS CANDIDATE - correct edge is put in candidateEdge list</li>
+			<li>OUTSIDE_RADIUS - correct edge is outside radius of candidate edges</li>
+		</ul>
+		Then candidateEdges are binned by distance and angle and for each this bundle we also check if correct edge is in it:
+		<ul>
+			<li>CAR_SKIPPED - bundle with correct edge was skipped because it allows cars|| is platform (possibleTransitLinksOnly)</li>
+			<li>EDGE_RETURNED - correct edge is in returned best bundle (Wanted option)</li>
+			<li>NOT_EDGE_RETURNED - other bundle had lower score then one with correct edge</li>
+			<li>NOT_EDGE_RETURNED_NULL - other bundle had lower score then one with correct edge (there was no bundle with correct edge)</li>
+			<li>BEST_BUNDLE_NULL - There is no best bundle</li>
+		</ul>
+		For each city with tests there were two runs normal and fixed. Normal has the same option as currently exists. Fixed has dissabled possibleTransitLinksOnly.
+		Numbers are number of stops with this option.
+		Clicking on nodes opens/closes children. Cliking on stop names (leaf nodes) opens OSM map with marker on stop location.
+		<br />JSON name:<span id="span_name"></span> 
+	<form>
+	<select id="json_name">
+		<option value="maribor_normal">maribor_normal</option>
+		<option value="portland_normal">portland_normal</option>
+		<option value="milano_normal">milano_normal</option>
+		<option value="maribor_fixed">maribor_fixed</option>
+		<option value="portland_fixed">portland_fixed</option>
+		<option value="milano_fixed">milano_fixed</option>
+	</select>
+</form>
+    <div id="tree-container"></div>
+</body>
+</html>
